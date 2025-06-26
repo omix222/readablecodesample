@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
 
-class NamingExamplesTest {
+public class NamingExamplesTest {
     
     @Nested
     @DisplayName("UserAccount Tests")
@@ -15,7 +15,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("新しいユーザーアカウントが正しく作成される")
-        void shouldCreateNewUserAccountCorrectly() {
+        public void shouldCreateNewUserAccountCorrectly() {
             String userId = "user123";
             String email = "test@example.com";
             
@@ -30,7 +30,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("ログイン試行が可能な状態を正しく判定する")
-        void shouldAllowLoginWhenAccountIsActiveAndAttemptsUnderLimit() {
+        public void shouldAllowLoginWhenAccountIsActiveAndAttemptsUnderLimit() {
             NamingExamples.UserAccount account = new NamingExamples.UserAccount("user123", "test@example.com");
             
             assertTrue(account.canAttemptLogin());
@@ -38,7 +38,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("ログイン失敗が3回に達するとアカウントが無効になる")
-        void shouldDeactivateAccountAfterThreeFailedLogins() {
+        public void shouldDeactivateAccountAfterThreeFailedLogins() {
             NamingExamples.UserAccount account = new NamingExamples.UserAccount("user123", "test@example.com");
             
             account.recordFailedLogin();
@@ -54,7 +54,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("ログイン試行回数をリセットできる")
-        void shouldResetLoginAttempts() {
+        public void shouldResetLoginAttempts() {
             NamingExamples.UserAccount account = new NamingExamples.UserAccount("user123", "test@example.com");
             
             account.recordFailedLogin();
@@ -67,7 +67,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("アカウント作成からの日数を正しく計算する")
-        void shouldCalculateDaysSinceCreation() {
+        public void shouldCalculateDaysSinceCreation() {
             NamingExamples.UserAccount account = new NamingExamples.UserAccount("user123", "test@example.com");
             
             int daysSinceCreation = account.getDaysSinceCreation();
@@ -81,7 +81,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("有効なメールアドレス形式を正しく判定する")
-        void shouldValidateCorrectEmailFormats() {
+        public void shouldValidateCorrectEmailFormats() {
             assertTrue(NamingExamples.EmailValidator.isValidEmailFormat("test@example.com"));
             assertTrue(NamingExamples.EmailValidator.isValidEmailFormat("user.name@domain.co.jp"));
             assertTrue(NamingExamples.EmailValidator.isValidEmailFormat("user+tag@example.org"));
@@ -89,7 +89,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("無効なメールアドレス形式を正しく判定する")
-        void shouldRejectInvalidEmailFormats() {
+        public void shouldRejectInvalidEmailFormats() {
             assertFalse(NamingExamples.EmailValidator.isValidEmailFormat(null));
             assertFalse(NamingExamples.EmailValidator.isValidEmailFormat(""));
             assertFalse(NamingExamples.EmailValidator.isValidEmailFormat("invalid-email"));
@@ -99,7 +99,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("ビジネスメールアドレスを正しく判定する")
-        void shouldIdentifyBusinessEmails() {
+        public void shouldIdentifyBusinessEmails() {
             assertTrue(NamingExamples.EmailValidator.isBusinessEmail("user@company.com"));
             assertTrue(NamingExamples.EmailValidator.isBusinessEmail("contact@business.org"));
             assertTrue(NamingExamples.EmailValidator.isBusinessEmail("info@corporate.net"));
@@ -107,7 +107,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("個人メールアドレスを正しく判定する")
-        void shouldIdentifyPersonalEmails() {
+        public void shouldIdentifyPersonalEmails() {
             assertFalse(NamingExamples.EmailValidator.isBusinessEmail("user@gmail.com"));
             assertFalse(NamingExamples.EmailValidator.isBusinessEmail("test@yahoo.com"));
             assertFalse(NamingExamples.EmailValidator.isBusinessEmail("person@hotmail.com"));
@@ -116,7 +116,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("無効なメールアドレスはビジネスメールとして判定されない")
-        void shouldRejectInvalidEmailsAsBusinessEmails() {
+        public void shouldRejectInvalidEmailsAsBusinessEmails() {
             assertFalse(NamingExamples.EmailValidator.isBusinessEmail(null));
             assertFalse(NamingExamples.EmailValidator.isBusinessEmail("invalid-email"));
             assertFalse(NamingExamples.EmailValidator.isBusinessEmail(""));
@@ -124,7 +124,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("大文字小文字を区別せずに判定する")
-        void shouldBeCaseInsensitive() {
+        public void shouldBeCaseInsensitive() {
             assertTrue(NamingExamples.EmailValidator.isValidEmailFormat("Test@Example.COM"));
             assertFalse(NamingExamples.EmailValidator.isBusinessEmail("User@GMAIL.COM"));
             assertTrue(NamingExamples.EmailValidator.isBusinessEmail("Contact@COMPANY.COM"));
@@ -137,7 +137,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("良い命名規則のクラスは理解しやすい")
-        void goodNamingClassShouldBeUnderstandable() {
+        public void goodNamingClassShouldBeUnderstandable() {
             NamingExamples.GoodNaming goodExample = new NamingExamples.GoodNaming();
             
             int result = goodExample.calculateTotalPrice(100);
@@ -152,7 +152,7 @@ class NamingExamplesTest {
         
         @Test
         @DisplayName("悪い命名規則のクラスは理解しづらい")
-        void badNamingClassShouldBeDifficultToUnderstand() {
+        public void badNamingClassShouldBeDifficultToUnderstand() {
             NamingExamples.BadNaming badExample = new NamingExamples.BadNaming();
             
             int result = badExample.calc(100);

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Optional;
 
-class FunctionDesignExamplesTest {
+public class FunctionDesignExamplesTest {
     
     @Nested
     @DisplayName("UserProfile Tests")
@@ -16,7 +16,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("UserProfileオブジェクトが正しく作成される")
-        void shouldCreateUserProfileCorrectly() {
+        public void shouldCreateUserProfileCorrectly() {
             FunctionDesignExamples.GoodFunctionDesign.UserProfile profile = 
                 new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
                     "John Doe", "john@example.com", 30, true, 
@@ -42,7 +42,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("ユーザープロファイルを正しくフォーマットする")
-        void shouldFormatUserProfileCorrectly() {
+        public void shouldFormatUserProfileCorrectly() {
             FunctionDesignExamples.GoodFunctionDesign.UserProfile profile = 
                 new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
                     "John Doe", "john@example.com", 30, true, 
@@ -62,7 +62,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("無効なデータを含むプロファイルを適切に処理する")
-        void shouldHandleInvalidProfileDataGracefully() {
+        public void shouldHandleInvalidProfileDataGracefully() {
             FunctionDesignExamples.GoodFunctionDesign.UserProfile profile = 
                 new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
                     null, "invalid-email", -5, false, 
@@ -78,7 +78,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("アクティブユーザーリストを正しく生成する")
-        void shouldGenerateActiveUsersList() {
+        public void shouldGenerateActiveUsersList() {
             List<String> activeUsers = goodDesign.getActiveUsers(3);
             
             assertEquals(3, activeUsers.size());
@@ -89,7 +89,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("非アクティブユーザーリストを正しく生成する")
-        void shouldGenerateInactiveUsersList() {
+        public void shouldGenerateInactiveUsersList() {
             List<String> inactiveUsers = goodDesign.getInactiveUsers(2);
             
             assertEquals(2, inactiveUsers.size());
@@ -100,7 +100,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("商品リストを正しく生成する")
-        void shouldGenerateProductsList() {
+        public void shouldGenerateProductsList() {
             List<String> products = goodDesign.getProducts(4);
             
             assertEquals(4, products.size());
@@ -116,7 +116,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("合計価格を正しく計算する")
-        void shouldCalculateTotalPriceCorrectly() {
+        public void shouldCalculateTotalPriceCorrectly() {
             double basePrice = 100.0;
             double taxRate = 0.1; // 10%
             double discount = 0.2; // 20%
@@ -129,7 +129,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("負の基本価格で例外が発生する")
-        void shouldThrowExceptionForNegativeBasePrice() {
+        public void shouldThrowExceptionForNegativeBasePrice() {
             assertThrows(IllegalArgumentException.class, () -> {
                 FunctionDesignExamples.CalculationUtils
                     .calculateTotalPrice(-100.0, 0.1, 0.2);
@@ -138,7 +138,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("無効な税率で例外が発生する")
-        void shouldThrowExceptionForInvalidTaxRate() {
+        public void shouldThrowExceptionForInvalidTaxRate() {
             assertThrows(IllegalArgumentException.class, () -> {
                 FunctionDesignExamples.CalculationUtils
                     .calculateTotalPrice(100.0, -0.1, 0.2);
@@ -152,7 +152,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("無効な割引率で例外が発生する")
-        void shouldThrowExceptionForInvalidDiscount() {
+        public void shouldThrowExceptionForInvalidDiscount() {
             assertThrows(IllegalArgumentException.class, () -> {
                 FunctionDesignExamples.CalculationUtils
                     .calculateTotalPrice(100.0, 0.1, -0.1);
@@ -166,7 +166,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("安全な除算が正しく動作する")
-        void shouldPerformSafeDivisionCorrectly() {
+        public void shouldPerformSafeDivisionCorrectly() {
             Optional<Double> result = FunctionDesignExamples.CalculationUtils
                 .safeDivide(10.0, 2.0);
             
@@ -176,7 +176,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("ゼロ除算で空のOptionalを返す")
-        void shouldReturnEmptyOptionalForDivisionByZero() {
+        public void shouldReturnEmptyOptionalForDivisionByZero() {
             Optional<Double> result = FunctionDesignExamples.CalculationUtils
                 .safeDivide(10.0, 0.0);
             
@@ -185,7 +185,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("偶数判定が正しく動作する")
-        void shouldIdentifyEvenNumbersCorrectly() {
+        public void shouldIdentifyEvenNumbersCorrectly() {
             assertTrue(FunctionDesignExamples.CalculationUtils.isEven(2));
             assertTrue(FunctionDesignExamples.CalculationUtils.isEven(0));
             assertTrue(FunctionDesignExamples.CalculationUtils.isEven(-4));
@@ -197,7 +197,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("素数判定が正しく動作する")
-        void shouldIdentifyPrimeNumbersCorrectly() {
+        public void shouldIdentifyPrimeNumbersCorrectly() {
             assertTrue(FunctionDesignExamples.CalculationUtils.isPrime(2));
             assertTrue(FunctionDesignExamples.CalculationUtils.isPrime(3));
             assertTrue(FunctionDesignExamples.CalculationUtils.isPrime(5));
@@ -214,7 +214,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("負の数と0は素数ではない")
-        void shouldReturnFalseForNegativeNumbersAndZero() {
+        public void shouldReturnFalseForNegativeNumbersAndZero() {
             assertFalse(FunctionDesignExamples.CalculationUtils.isPrime(0));
             assertFalse(FunctionDesignExamples.CalculationUtils.isPrime(-1));
             assertFalse(FunctionDesignExamples.CalculationUtils.isPrime(-5));
@@ -227,7 +227,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("悪い関数設計は複雑で理解しづらい")
-        void badFunctionDesignShouldBeComplexAndHardToUnderstand() {
+        public void badFunctionDesignShouldBeComplexAndHardToUnderstand() {
             FunctionDesignExamples.BadFunctionDesign badDesign = 
                 new FunctionDesignExamples.BadFunctionDesign();
             
@@ -242,7 +242,7 @@ class FunctionDesignExamplesTest {
         
         @Test
         @DisplayName("悪い関数設計は曖昧なパラメータを使用する")
-        void badFunctionDesignShouldUseAmbiguousParameters() {
+        public void badFunctionDesignShouldUseAmbiguousParameters() {
             FunctionDesignExamples.BadFunctionDesign badDesign = 
                 new FunctionDesignExamples.BadFunctionDesign();
             

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
 
-class CodeStructureExamplesTest {
+public class CodeStructureExamplesTest {
     
     @Nested
     @DisplayName("Order Tests")
@@ -17,7 +17,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("注文オブジェクトが正しく作成される")
-        void shouldCreateOrderCorrectly() {
+        public void shouldCreateOrderCorrectly() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 2));
             
@@ -45,7 +45,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("注文アイテムの合計価格が正しく計算される")
-        void shouldCalculateOrderItemTotalCorrectly() {
+        public void shouldCalculateOrderItemTotalCorrectly() {
             CodeStructureExamples.GoodStructure.OrderItem item = 
                 new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 3);
             
@@ -54,7 +54,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("注文アイテムのプロパティが正しく取得される")
-        void shouldGetOrderItemPropertiesCorrectly() {
+        public void shouldGetOrderItemPropertiesCorrectly() {
             CodeStructureExamples.GoodStructure.OrderItem item = 
                 new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 2);
             
@@ -71,7 +71,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("支払い方法のコードが正しく取得される")
-        void shouldGetPaymentMethodCodesCorrectly() {
+        public void shouldGetPaymentMethodCodesCorrectly() {
             assertEquals("credit", CodeStructureExamples.GoodStructure.PaymentMethod.CREDIT_CARD.getCode());
             assertEquals("debit", CodeStructureExamples.GoodStructure.PaymentMethod.DEBIT_CARD.getCode());
             assertEquals("cash", CodeStructureExamples.GoodStructure.PaymentMethod.CASH.getCode());
@@ -85,7 +85,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("成功結果が正しく作成される")
-        void shouldCreateSuccessResultCorrectly() {
+        public void shouldCreateSuccessResultCorrectly() {
             CodeStructureExamples.GoodStructure.OrderProcessingResult result = 
                 CodeStructureExamples.GoodStructure.OrderProcessingResult.success("ORD123", 100.50);
             
@@ -97,7 +97,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("失敗結果が正しく作成される")
-        void shouldCreateFailureResultCorrectly() {
+        public void shouldCreateFailureResultCorrectly() {
             CodeStructureExamples.GoodStructure.OrderProcessingResult result = 
                 CodeStructureExamples.GoodStructure.OrderProcessingResult.failure("Invalid payment method");
             
@@ -117,7 +117,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("有効な注文が正しく処理される")
-        void shouldProcessValidOrderSuccessfully() {
+        public void shouldProcessValidOrderSuccessfully() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 2));
             
@@ -139,7 +139,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("無効な顧客IDで注文処理が失敗する")
-        void shouldFailForInvalidCustomerId() {
+        public void shouldFailForInvalidCustomerId() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 1));
             
@@ -160,7 +160,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("空のアイテムリストで注文処理が失敗する")
-        void shouldFailForEmptyItemsList() {
+        public void shouldFailForEmptyItemsList() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             
             CodeStructureExamples.GoodStructure.Order order = 
@@ -180,7 +180,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("配送先住所なしで注文処理が失敗する")
-        void shouldFailForMissingDeliveryAddress() {
+        public void shouldFailForMissingDeliveryAddress() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 1));
             
@@ -201,7 +201,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("クレジット限度額超過で注文処理が失敗する")
-        void shouldFailForCreditLimitExceeded() {
+        public void shouldFailForCreditLimitExceeded() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("EXPENSIVE", "Expensive Item", 1500.0, 1));
             
@@ -227,7 +227,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("商品が正しく見つかる")
-        void shouldFindProductsCorrectly() {
+        public void shouldFindProductsCorrectly() {
             Optional<CodeStructureExamples.GoodStructure.Product> book = 
                 CodeStructureExamples.GoodStructure.ProductCatalog.findProduct("BOOK001");
             
@@ -239,7 +239,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("存在しない商品は見つからない")
-        void shouldReturnEmptyForNonexistentProduct() {
+        public void shouldReturnEmptyForNonexistentProduct() {
             Optional<CodeStructureExamples.GoodStructure.Product> product = 
                 CodeStructureExamples.GoodStructure.ProductCatalog.findProduct("NONEXISTENT");
             
@@ -248,7 +248,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("全商品リストが正しく取得される")
-        void shouldGetAllProductsCorrectly() {
+        public void shouldGetAllProductsCorrectly() {
             List<CodeStructureExamples.GoodStructure.Product> products = 
                 CodeStructureExamples.GoodStructure.ProductCatalog.getAllProducts();
             
@@ -262,7 +262,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("OrderBuilderで注文が正しく作成される")
-        void shouldBuildOrderCorrectly() {
+        public void shouldBuildOrderCorrectly() {
             CodeStructureExamples.GoodStructure.Order order = 
                 new CodeStructureExamples.GoodStructure.OrderBuilder()
                     .customerId("CUST001")
@@ -282,7 +282,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("存在しない商品を追加しても無視される")
-        void shouldIgnoreNonexistentProducts() {
+        public void shouldIgnoreNonexistentProducts() {
             CodeStructureExamples.GoodStructure.Order order = 
                 new CodeStructureExamples.GoodStructure.OrderBuilder()
                     .customerId("CUST001")
@@ -303,7 +303,7 @@ class CodeStructureExamplesTest {
         
         @Test
         @DisplayName("悪い構造のコードも動作する")
-        void badStructureCodeShouldStillWork() {
+        public void badStructureCodeShouldStillWork() {
             CodeStructureExamples.BadStructure badStructure = 
                 new CodeStructureExamples.BadStructure();
             
