@@ -233,7 +233,9 @@ public class CommentExamples {
         }
         
         private PaymentResult attemptPayment(long amount, String cardToken) throws TransientPaymentException {
-            return new PaymentResult();
+            // 実際の決済処理のシミュレーション
+            String transactionId = "TX-" + System.currentTimeMillis();
+            return PaymentResult.success(transactionId);
         }
         
         /**
@@ -252,14 +254,37 @@ public class CommentExamples {
         }
     }
     
-    public static class PaymentResult {
-        private String transactionId;
-        private boolean success;
-        private String errorMessage;
+    /**
+     * 良い例：Java 17のrecordで決済結果データを表現 (Modern Java)
+     * - 決済処理の結果を不変オブジェクトとして安全に保持
+     * - equals、hashCode、toStringが自動生成される
+     * - ボイラープレートコードの削減
+     */
+    public record PaymentResult(
+        String transactionId,
+        boolean success,
+        String errorMessage
+    ) {
+        /**
+         * 成功した決済結果を作成するファクトリメソッド
+         */
+        public static PaymentResult success(String transactionId) {
+            return new PaymentResult(transactionId, true, null);
+        }
         
-        public String getTransactionId() { return transactionId; }
-        public boolean isSuccess() { return success; }
-        public String getErrorMessage() { return errorMessage; }
+        /**
+         * 失敗した決済結果を作成するファクトリメソッド
+         */
+        public static PaymentResult failure(String errorMessage) {
+            return new PaymentResult(null, false, errorMessage);
+        }
+        
+        /**
+         * 決済が成功したかどうかを判定
+         */
+        public boolean isFailure() {
+            return !success;
+        }
     }
     
     public static class PaymentException extends Exception {

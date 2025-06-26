@@ -135,14 +135,25 @@ public class CommentExamplesTest {
     class PaymentResultTest {
         
         @Test
-        @DisplayName("PaymentResultオブジェクトが正しく作成される")
+        @DisplayName("PaymentResultレコードが正しく作成される")
         public void shouldCreatePaymentResultCorrectly() {
-            CommentExamples.PaymentResult result = new CommentExamples.PaymentResult();
+            // 成功ケース
+            CommentExamples.PaymentResult successResult = CommentExamples.PaymentResult.success("TX123");
             
-            assertNotNull(result);
-            assertNull(result.getTransactionId());
-            assertFalse(result.isSuccess());
-            assertNull(result.getErrorMessage());
+            assertNotNull(successResult);
+            assertEquals("TX123", successResult.transactionId());
+            assertTrue(successResult.success());
+            assertNull(successResult.errorMessage());
+            assertFalse(successResult.isFailure());
+            
+            // 失敗ケース
+            CommentExamples.PaymentResult failureResult = CommentExamples.PaymentResult.failure("Payment failed");
+            
+            assertNotNull(failureResult);
+            assertNull(failureResult.transactionId());
+            assertFalse(failureResult.success());
+            assertEquals("Payment failed", failureResult.errorMessage());
+            assertTrue(failureResult.isFailure());
         }
     }
     

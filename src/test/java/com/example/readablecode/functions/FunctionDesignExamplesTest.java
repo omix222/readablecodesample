@@ -20,16 +20,16 @@ public class FunctionDesignExamplesTest {
             FunctionDesignExamples.GoodFunctionDesign.UserProfile profile = 
                 new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
                     "John Doe", "john@example.com", 30, true, 
-                    "123 Main St", "555-1234", 150
+                    "123 Main St", "555-1234", 85  // Score within valid range 0-100
                 );
             
-            assertEquals("John Doe", profile.getName());
-            assertEquals("john@example.com", profile.getEmail());
-            assertEquals(30, profile.getAge());
+            assertEquals("John Doe", profile.name());
+            assertEquals("john@example.com", profile.email());
+            assertEquals(30, profile.age());
             assertTrue(profile.isActive());
-            assertEquals("123 Main St", profile.getAddress());
-            assertEquals("555-1234", profile.getPhoneNumber());
-            assertEquals(150, profile.getScore());
+            assertEquals("123 Main St", profile.address());
+            assertEquals("555-1234", profile.phoneNumber());
+            assertEquals(85, profile.score());
         }
     }
     
@@ -46,7 +46,7 @@ public class FunctionDesignExamplesTest {
             FunctionDesignExamples.GoodFunctionDesign.UserProfile profile = 
                 new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
                     "John Doe", "john@example.com", 30, true, 
-                    "123 Main St", "555-1234", 150
+                    "123 Main St", "555-1234", 85  // Valid score within 0-100 range
                 );
             
             String result = goodDesign.formatUserProfile(profile);
@@ -57,23 +57,45 @@ public class FunctionDesignExamplesTest {
             assertTrue(result.contains("ACTIVE"));
             assertTrue(result.contains("123 Main St"));
             assertTrue(result.contains("555-1234"));
-            assertTrue(result.contains("HIGH SCORE"));
+            assertFalse(result.contains("HIGH SCORE")); // Score 85 is not > 100
         }
         
         @Test
-        @DisplayName("無効なデータを含むプロファイルを適切に処理する")
+        @DisplayName("無効なデータでUserProfileレコード作成が失敗する")
         public void shouldHandleInvalidProfileDataGracefully() {
-            FunctionDesignExamples.GoodFunctionDesign.UserProfile profile = 
+            // recordのコンパクトコンストラクタで入力検証されるため例外が発生
+            
+            // 無効な名前
+            assertThrows(IllegalArgumentException.class, () -> {
                 new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
-                    null, "invalid-email", -5, false, 
-                    "", null, 50
+                    null, "john@example.com", 30, true, 
+                    "123 Main St", "555-1234", 50
                 );
+            });
             
-            String result = goodDesign.formatUserProfile(profile);
+            // 無効なメール
+            assertThrows(IllegalArgumentException.class, () -> {
+                new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
+                    "John Doe", "invalid-email", 30, true, 
+                    "123 Main St", "555-1234", 50
+                );
+            });
             
-            assertFalse(result.contains("ACTIVE"));
-            assertFalse(result.contains("HIGH SCORE"));
-            assertFalse(result.contains("Age:"));
+            // 無効な年齢
+            assertThrows(IllegalArgumentException.class, () -> {
+                new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
+                    "John Doe", "john@example.com", -5, true, 
+                    "123 Main St", "555-1234", 50
+                );
+            });
+            
+            // 無効なスコア
+            assertThrows(IllegalArgumentException.class, () -> {
+                new FunctionDesignExamples.GoodFunctionDesign.UserProfile(
+                    "John Doe", "john@example.com", 30, true, 
+                    "123 Main St", "555-1234", 150  // Score > 100
+                );
+            });
         }
         
         @Test

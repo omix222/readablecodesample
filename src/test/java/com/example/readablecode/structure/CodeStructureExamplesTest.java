@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 public class CodeStructureExamplesTest {
     
@@ -16,7 +17,7 @@ public class CodeStructureExamplesTest {
     class OrderTest {
         
         @Test
-        @DisplayName("注文オブジェクトが正しく作成される")
+        @DisplayName("注文レコードが正しく作成される")
         public void shouldCreateOrderCorrectly() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 2));
@@ -27,15 +28,16 @@ public class CodeStructureExamplesTest {
                     items, 
                     CodeStructureExamples.GoodStructure.PaymentMethod.CREDIT_CARD,
                     "123 Main St",
-                    true
+                    true,
+                    LocalDateTime.now()
                 );
             
-            assertEquals("CUST001", order.getCustomerId());
-            assertEquals(1, order.getItems().size());
-            assertEquals(CodeStructureExamples.GoodStructure.PaymentMethod.CREDIT_CARD, order.getPaymentMethod());
-            assertEquals("123 Main St", order.getDeliveryAddress());
+            assertEquals("CUST001", order.customerId());
+            assertEquals(1, order.items().size());
+            assertEquals(CodeStructureExamples.GoodStructure.PaymentMethod.CREDIT_CARD, order.paymentMethod());
+            assertEquals("123 Main St", order.deliveryAddress());
             assertTrue(order.isPriority());
-            assertNotNull(order.getCreatedAt());
+            assertNotNull(order.createdAt());
         }
     }
     
@@ -58,10 +60,10 @@ public class CodeStructureExamplesTest {
             CodeStructureExamples.GoodStructure.OrderItem item = 
                 new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 2);
             
-            assertEquals("BOOK001", item.getProductId());
-            assertEquals("Java Book", item.getName());
-            assertEquals(25.99, item.getPrice(), 0.01);
-            assertEquals(2, item.getQuantity());
+            assertEquals("BOOK001", item.productId());
+            assertEquals("Java Book", item.name());
+            assertEquals(25.99, item.price(), 0.01);
+            assertEquals(2, item.quantity());
         }
     }
     
@@ -89,10 +91,10 @@ public class CodeStructureExamplesTest {
             CodeStructureExamples.GoodStructure.OrderProcessingResult result = 
                 CodeStructureExamples.GoodStructure.OrderProcessingResult.success("ORD123", 100.50);
             
-            assertTrue(result.isSuccess());
-            assertEquals("Order processed successfully", result.getMessage());
-            assertEquals("ORD123", result.getOrderId());
-            assertEquals(100.50, result.getTotalAmount(), 0.01);
+            assertTrue(result.success());
+            assertEquals("Order processed successfully", result.message());
+            assertEquals("ORD123", result.orderId());
+            assertEquals(100.50, result.totalAmount(), 0.01);
         }
         
         @Test
@@ -101,10 +103,10 @@ public class CodeStructureExamplesTest {
             CodeStructureExamples.GoodStructure.OrderProcessingResult result = 
                 CodeStructureExamples.GoodStructure.OrderProcessingResult.failure("Invalid payment method");
             
-            assertFalse(result.isSuccess());
-            assertEquals("Invalid payment method", result.getMessage());
-            assertNull(result.getOrderId());
-            assertEquals(0.0, result.getTotalAmount(), 0.01);
+            assertFalse(result.success());
+            assertEquals("Invalid payment method", result.message());
+            assertNull(result.orderId());
+            assertEquals(0.0, result.totalAmount(), 0.01);
         }
     }
     
@@ -122,7 +124,7 @@ public class CodeStructureExamplesTest {
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 2));
             
             CodeStructureExamples.GoodStructure.Order order = 
-                new CodeStructureExamples.GoodStructure.Order(
+                CodeStructureExamples.GoodStructure.Order.create(
                     "CUST001", 
                     items, 
                     CodeStructureExamples.GoodStructure.PaymentMethod.DEBIT_CARD,
@@ -132,71 +134,62 @@ public class CodeStructureExamplesTest {
             
             CodeStructureExamples.GoodStructure.OrderProcessingResult result = processor.processOrder(order);
             
-            assertTrue(result.isSuccess());
-            assertNotNull(result.getOrderId());
-            assertEquals(51.98, result.getTotalAmount(), 0.01);
+            assertTrue(result.success());
+            assertNotNull(result.orderId());
+            assertEquals(51.98, result.totalAmount(), 0.01);
         }
         
         @Test
-        @DisplayName("無効な顧客IDで注文処理が失敗する")
+        @DisplayName("無効な顧客IDで注文作成が失敗する")
         public void shouldFailForInvalidCustomerId() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 1));
             
-            CodeStructureExamples.GoodStructure.Order order = 
-                new CodeStructureExamples.GoodStructure.Order(
-                    "", 
+            // recordのコンパクトコンストラクタで入力検証されるため例外が発生
+            assertThrows(IllegalArgumentException.class, () -> {
+                CodeStructureExamples.GoodStructure.Order.create(
+                    "", // 空の顧客ID
                     items, 
                     CodeStructureExamples.GoodStructure.PaymentMethod.CASH,
                     "123 Main St",
                     false
                 );
-            
-            CodeStructureExamples.GoodStructure.OrderProcessingResult result = processor.processOrder(order);
-            
-            assertFalse(result.isSuccess());
-            assertEquals("Invalid customer ID", result.getMessage());
+            });
         }
         
         @Test
-        @DisplayName("空のアイテムリストで注文処理が失敗する")
+        @DisplayName("空のアイテムリストで注文作成が失敗する")
         public void shouldFailForEmptyItemsList() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             
-            CodeStructureExamples.GoodStructure.Order order = 
-                new CodeStructureExamples.GoodStructure.Order(
+            // recordのコンパクトコンストラクタで入力検証されるため例外が発生
+            assertThrows(IllegalArgumentException.class, () -> {
+                CodeStructureExamples.GoodStructure.Order.create(
                     "CUST001", 
-                    items, 
+                    items, // 空のリスト
                     CodeStructureExamples.GoodStructure.PaymentMethod.CASH,
                     "123 Main St",
                     false
                 );
-            
-            CodeStructureExamples.GoodStructure.OrderProcessingResult result = processor.processOrder(order);
-            
-            assertFalse(result.isSuccess());
-            assertEquals("Order must contain at least one item", result.getMessage());
+            });
         }
         
         @Test
-        @DisplayName("配送先住所なしで注文処理が失敗する")
+        @DisplayName("配送先住所なしで注文作成が失敗する")
         public void shouldFailForMissingDeliveryAddress() {
             List<CodeStructureExamples.GoodStructure.OrderItem> items = new ArrayList<>();
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("BOOK001", "Java Book", 25.99, 1));
             
-            CodeStructureExamples.GoodStructure.Order order = 
-                new CodeStructureExamples.GoodStructure.Order(
+            // recordのコンパクトコンストラクタで入力検証されるため例外が発生
+            assertThrows(IllegalArgumentException.class, () -> {
+                CodeStructureExamples.GoodStructure.Order.create(
                     "CUST001", 
                     items, 
                     CodeStructureExamples.GoodStructure.PaymentMethod.CASH,
-                    "",
+                    "", // 空の配送先住所
                     false
                 );
-            
-            CodeStructureExamples.GoodStructure.OrderProcessingResult result = processor.processOrder(order);
-            
-            assertFalse(result.isSuccess());
-            assertEquals("Delivery address is required", result.getMessage());
+            });
         }
         
         @Test
@@ -206,7 +199,7 @@ public class CodeStructureExamplesTest {
             items.add(new CodeStructureExamples.GoodStructure.OrderItem("EXPENSIVE", "Expensive Item", 1500.0, 1));
             
             CodeStructureExamples.GoodStructure.Order order = 
-                new CodeStructureExamples.GoodStructure.Order(
+                CodeStructureExamples.GoodStructure.Order.create(
                     "CUST001", 
                     items, 
                     CodeStructureExamples.GoodStructure.PaymentMethod.CREDIT_CARD,
@@ -216,8 +209,8 @@ public class CodeStructureExamplesTest {
             
             CodeStructureExamples.GoodStructure.OrderProcessingResult result = processor.processOrder(order);
             
-            assertFalse(result.isSuccess());
-            assertTrue(result.getMessage().contains("credit limit"));
+            assertFalse(result.success());
+            assertTrue(result.message().contains("credit limit"));
         }
     }
     
@@ -232,9 +225,9 @@ public class CodeStructureExamplesTest {
                 CodeStructureExamples.GoodStructure.ProductCatalog.findProduct("BOOK001");
             
             assertTrue(book.isPresent());
-            assertEquals("BOOK001", book.get().getId());
-            assertEquals("Programming Book", book.get().getName());
-            assertEquals(25.99, book.get().getPrice(), 0.01);
+            assertEquals("BOOK001", book.get().id());
+            assertEquals("Programming Book", book.get().name());
+            assertEquals(25.99, book.get().price(), 0.01);
         }
         
         @Test
@@ -273,10 +266,10 @@ public class CodeStructureExamplesTest {
                     .priority()
                     .build();
             
-            assertEquals("CUST001", order.getCustomerId());
-            assertEquals(2, order.getItems().size());
-            assertEquals(CodeStructureExamples.GoodStructure.PaymentMethod.CREDIT_CARD, order.getPaymentMethod());
-            assertEquals("123 Main St", order.getDeliveryAddress());
+            assertEquals("CUST001", order.customerId());
+            assertEquals(2, order.items().size());
+            assertEquals(CodeStructureExamples.GoodStructure.PaymentMethod.CREDIT_CARD, order.paymentMethod());
+            assertEquals("123 Main St", order.deliveryAddress());
             assertTrue(order.isPriority());
         }
         
@@ -292,8 +285,8 @@ public class CodeStructureExamplesTest {
                     .deliveryAddress("123 Main St")
                     .build();
             
-            assertEquals(1, order.getItems().size());
-            assertEquals("BOOK001", order.getItems().get(0).getProductId());
+            assertEquals(1, order.items().size());
+            assertEquals("BOOK001", order.items().get(0).productId());
         }
     }
     

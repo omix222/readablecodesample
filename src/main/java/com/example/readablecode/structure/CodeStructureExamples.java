@@ -75,58 +75,128 @@ public class CodeStructureExamples {
     public static class GoodStructure {
         
         /**
-         * 良い例：適切な責任分離を行った注文クラス (p.73「データ構造の整理」)
+         * 良い例：Java 17のrecordで注文データを整理 (p.73「データ構造の整理」+ Modern Java)
+         * - recordにより不変オブジェクトが自動保証される
+         * - equals、hashCode、toStringが自動生成される
          * - 関連するデータをまとめる
-         * - 不変オブジェクトで副作用を防ぐ
-         * - 明確な状態管理
+         * - ボイラープレートコードを削減
          */
-        public static class Order {
-            private final String customerId;
-            private final List<OrderItem> items;
-            private final PaymentMethod paymentMethod;
-            private final String deliveryAddress;
-            private final boolean isPriority;
-            private final LocalDateTime createdAt;
-            
-            public Order(String customerId, List<OrderItem> items, PaymentMethod paymentMethod, 
-                        String deliveryAddress, boolean isPriority) {
-                this.customerId = customerId;
-                this.items = new ArrayList<>(items);
-                this.paymentMethod = paymentMethod;
-                this.deliveryAddress = deliveryAddress;
-                this.isPriority = isPriority;
-                this.createdAt = LocalDateTime.now();
+        public record Order(
+            String customerId,
+            List<OrderItem> items,
+            PaymentMethod paymentMethod,
+            String deliveryAddress,
+            boolean isPriority,
+            LocalDateTime createdAt
+        ) {
+            /**
+             * recordのコンパクトコンストラクタで入力検証とデータの不変性確保
+             */
+            public Order {
+                if (customerId == null || customerId.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Customer ID cannot be null or empty");
+                }
+                if (items == null || items.isEmpty()) {
+                    throw new IllegalArgumentException("Order must contain at least one item");
+                }
+                if (paymentMethod == null) {
+                    throw new IllegalArgumentException("Payment method cannot be null");
+                }
+                if (deliveryAddress == null || deliveryAddress.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Delivery address cannot be null or empty");
+                }
+                
+                // 不変性確保：リストのコピーを作成
+                items = List.copyOf(items);
+                
+                // createdAtがnullの場合は現在時刻を設定
+                if (createdAt == null) {
+                    createdAt = LocalDateTime.now();
+                }
             }
             
-            public String getCustomerId() { return customerId; }
-            public List<OrderItem> getItems() { return new ArrayList<>(items); }
-            public PaymentMethod getPaymentMethod() { return paymentMethod; }
-            public String getDeliveryAddress() { return deliveryAddress; }
-            public boolean isPriority() { return isPriority; }
-            public LocalDateTime getCreatedAt() { return createdAt; }
+            /**
+             * recordにビジネスロジックメソッドを追加
+             */
+            public double getTotalAmount() {
+                return items.stream()
+                          .mapToDouble(OrderItem::getTotalPrice)
+                          .sum();
+            }
+            
+            public int getTotalItemCount() {
+                return items.stream()
+                          .mapToInt(OrderItem::quantity)
+                          .sum();
+            }
+            
+            public boolean hasProduct(String productId) {
+                return items.stream()
+                          .anyMatch(item -> item.productId().equals(productId));
+            }
+            
+            /**
+             * ファクトリメソッド：createdAtを自動設定する便利コンストラクタ
+             */
+            public static Order create(String customerId, List<OrderItem> items, 
+                                     PaymentMethod paymentMethod, String deliveryAddress, 
+                                     boolean isPriority) {
+                return new Order(customerId, items, paymentMethod, deliveryAddress, isPriority, LocalDateTime.now());
+            }
         }
         
-        public static class OrderItem {
-            private final String productId;
-            private final String name;
-            private final double price;
-            private final int quantity;
-            
-            public OrderItem(String productId, String name, double price, int quantity) {
-                this.productId = productId;
-                this.name = name;
-                this.price = price;
-                this.quantity = quantity;
+        /**
+         * 良い例：Java 17のrecordで注文アイテムを表現 (Modern Java)
+         * - 不変データを簡潔に定義
+         * - 自動的な値オブジェクトの特性（equals、hashCode、toString）
+         * - ビジネスロジックメソッドも含められる
+         */
+        public record OrderItem(
+            String productId,
+            String name,
+            double price,
+            int quantity
+        ) {
+            /**
+             * recordのコンパクトコンストラクタで入力検証
+             */
+            public OrderItem {
+                if (productId == null || productId.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Product ID cannot be null or empty");
+                }
+                if (name == null || name.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Product name cannot be null or empty");
+                }
+                if (price < 0) {
+                    throw new IllegalArgumentException("Price cannot be negative");
+                }
+                if (quantity <= 0) {
+                    throw new IllegalArgumentException("Quantity must be positive");
+                }
             }
             
+            /**
+             * recordにビジネスロジックメソッドを追加
+             */
             public double getTotalPrice() {
                 return price * quantity;
             }
             
-            public String getProductId() { return productId; }
-            public String getName() { return name; }
-            public double getPrice() { return price; }
-            public int getQuantity() { return quantity; }
+            public boolean isExpensive() {
+                return price > 100.0;
+            }
+            
+            public boolean isLargeQuantity() {
+                return quantity > 10;
+            }
+            
+            public OrderItem withQuantity(int newQuantity) {
+                return new OrderItem(productId, name, price, newQuantity);
+            }
+            
+            public OrderItem withPrice(double newPrice) {
+                return new OrderItem(productId, name, newPrice, quantity);
+            }
         }
         
         public enum PaymentMethod {
@@ -146,31 +216,38 @@ public class CodeStructureExamples {
             }
         }
         
-        public static class OrderProcessingResult {
-            private final boolean success;
-            private final String message;
-            private final String orderId;
-            private final double totalAmount;
-            
-            private OrderProcessingResult(boolean success, String message, String orderId, double totalAmount) {
-                this.success = success;
-                this.message = message;
-                this.orderId = orderId;
-                this.totalAmount = totalAmount;
-            }
-            
+        /**
+         * 良い例：Java 17のrecordで注文処理結果を表現 (Modern Java)
+         * - 処理結果を不変オブジェクトとして安全に保持
+         * - equals、hashCode、toStringが自動生成される
+         * - ファクトリメソッドで作成パターンを統一
+         */
+        public record OrderProcessingResult(
+            boolean success,
+            String message,
+            String orderId,
+            double totalAmount
+        ) {
+            /**
+             * 成功した注文処理結果を作成するファクトリメソッド
+             */
             public static OrderProcessingResult success(String orderId, double totalAmount) {
                 return new OrderProcessingResult(true, "Order processed successfully", orderId, totalAmount);
             }
             
+            /**
+             * 失敗した注文処理結果を作成するファクトリメソッド
+             */
             public static OrderProcessingResult failure(String message) {
                 return new OrderProcessingResult(false, message, null, 0.0);
             }
             
-            public boolean isSuccess() { return success; }
-            public String getMessage() { return message; }
-            public String getOrderId() { return orderId; }
-            public double getTotalAmount() { return totalAmount; }
+            /**
+             * 処理が失敗したかどうかを判定
+             */
+            public boolean isFailure() {
+                return !success;
+            }
         }
         
         /**
@@ -207,7 +284,7 @@ public class CodeStructureExamples {
                 double totalAmount = calculateTotalAmount(order);
                 
                 // 良い例：Optional型でエラーの有無を明確に表現 (p.76)
-                Optional<String> paymentError = validatePayment(order.getPaymentMethod(), totalAmount);
+                Optional<String> paymentError = validatePayment(order.paymentMethod(), totalAmount);
                 if (paymentError.isPresent()) {
                     return OrderProcessingResult.failure(paymentError.get());
                 }
@@ -227,15 +304,15 @@ public class CodeStructureExamples {
                 // 良い例：最も基本的な検証から順番に実行 (p.73-75「条件式の順序」)
                 // 顧客ID → 商品 → 配送先の順で重要度順に検証
                 
-                if (order.getCustomerId() == null || order.getCustomerId().trim().isEmpty()) {
+                if (order.customerId() == null || order.customerId().trim().isEmpty()) {
                     return Optional.of("Invalid customer ID");
                 }
                 
-                if (order.getItems() == null || order.getItems().isEmpty()) {
+                if (order.items() == null || order.items().isEmpty()) {
                     return Optional.of("Order must contain at least one item");
                 }
                 
-                if (order.getDeliveryAddress() == null || order.getDeliveryAddress().trim().isEmpty()) {
+                if (order.deliveryAddress() == null || order.deliveryAddress().trim().isEmpty()) {
                     return Optional.of("Delivery address is required");
                 }
                 
@@ -252,7 +329,7 @@ public class CodeStructureExamples {
             private double calculateTotalAmount(Order order) {
                 // 良い例：Stream APIで関数型プログラミング的に記述 (p.92)
                 // 各商品の合計価格を取得し、それらを合計する処理が明確
-                return order.getItems()
+                return order.items()
                            .stream()
                            .mapToDouble(OrderItem::getTotalPrice)
                            .sum();
@@ -309,7 +386,7 @@ public class CodeStructureExamples {
             }
             
             private String generateOrderId(Order order) {
-                return "ORD-" + System.currentTimeMillis() + "-" + order.getCustomerId().hashCode();
+                return "ORD-" + System.currentTimeMillis() + "-" + order.customerId().hashCode();
             }
         }
         
@@ -331,20 +408,42 @@ public class CodeStructureExamples {
             }
         }
         
-        public static class Product {
-            private final String id;
-            private final String name;
-            private final double price;
-            
-            public Product(String id, String name, double price) {
-                this.id = id;
-                this.name = name;
-                this.price = price;
+        /**
+         * 良い例：Java 17のrecordで商品データを表現 (Modern Java)
+         * - 不変データを簡潔に定義
+         * - 自動的な値オブジェクトの特性（equals、hashCode、toString）
+         * - ボイラープレートコードの削減
+         */
+        public record Product(
+            String id,
+            String name,
+            double price
+        ) {
+            /**
+             * recordのコンパクトコンストラクタで入力検証
+             */
+            public Product {
+                if (id == null || id.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Product ID cannot be null or empty");
+                }
+                if (name == null || name.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Product name cannot be null or empty");
+                }
+                if (price < 0) {
+                    throw new IllegalArgumentException("Product price cannot be negative");
+                }
             }
             
-            public String getId() { return id; }
-            public String getName() { return name; }
-            public double getPrice() { return price; }
+            /**
+             * recordにビジネスロジックメソッドを追加
+             */
+            public boolean isExpensive() {
+                return price > 50.0;
+            }
+            
+            public Product withPrice(double newPrice) {
+                return new Product(id, name, newPrice);
+            }
         }
         
         public static class OrderBuilder {
@@ -363,7 +462,7 @@ public class CodeStructureExamples {
                 Optional<Product> product = ProductCatalog.findProduct(productId);
                 if (product.isPresent()) {
                     Product p = product.get();
-                    items.add(new OrderItem(p.getId(), p.getName(), p.getPrice(), quantity));
+                    items.add(new OrderItem(p.id(), p.name(), p.price(), quantity));
                 }
                 return this;
             }
@@ -384,7 +483,7 @@ public class CodeStructureExamples {
             }
             
             public Order build() {
-                return new Order(customerId, items, paymentMethod, deliveryAddress, isPriority);
+                return Order.create(customerId, items, paymentMethod, deliveryAddress, isPriority);
             }
         }
     }

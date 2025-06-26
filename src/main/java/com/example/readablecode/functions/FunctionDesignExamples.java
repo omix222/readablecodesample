@@ -101,49 +101,67 @@ public class FunctionDesignExamples {
     public static class GoodFunctionDesign {
         
         /**
-         * 良い例：パラメータオブジェクトでデータをまとめる (p.36)
-         * - 多数のパラメータを一つのオブジェクトにまとめる
+         * 良い例：Java 17のrecordでデータをまとめる (p.36 + Modern Java)
+         * - recordにより自動でコンストラクタ、getter、equals、hashCode、toStringが生成される
+         * - 不変オブジェクトが保証される
+         * - ボイラープレートコードが大幅に削減される
          * - データの関連性を明確にする
          * - パラメータの順序ミスを防ぐ
          */
-        public static class UserProfile {
-            private final String name;
-            private final String email;
-            private final int age;
-            private final boolean isActive;
-            private final String address;
-            private final String phoneNumber;
-            private final int score;
-            
-            public UserProfile(String name, String email, int age, boolean isActive, 
-                             String address, String phoneNumber, int score) {
-                this.name = name;
-                this.email = email;
-                this.age = age;
-                this.isActive = isActive;
-                this.address = address;
-                this.phoneNumber = phoneNumber;
-                this.score = score;
+        public record UserProfile(
+            String name,
+            String email, 
+            int age,
+            boolean isActive,
+            String address,
+            String phoneNumber,
+            int score
+        ) {
+            /**
+             * recordのコンパクトコンストラクタで入力値検証 (Modern Java Best Practice)
+             * recordでもビジネスロジックを含められる
+             */
+            public UserProfile {
+                if (name == null || name.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Name cannot be null or empty");
+                }
+                if (email == null || !email.contains("@")) {
+                    throw new IllegalArgumentException("Invalid email format");
+                }
+                if (age < 0 || age > 150) {
+                    throw new IllegalArgumentException("Age must be between 0 and 150");
+                }
+                if (score < 0 || score > 100) {
+                    throw new IllegalArgumentException("Score must be between 0 and 100");
+                }
             }
             
-            public String getName() { return name; }
-            public String getEmail() { return email; }
-            public int getAge() { return age; }
-            public boolean isActive() { return isActive; }
-            public String getAddress() { return address; }
-            public String getPhoneNumber() { return phoneNumber; }
-            public int getScore() { return score; }
+            /**
+             * recordにカスタムメソッドを追加可能 (Modern Java)
+             * ビジネスロジックをrecord内に定義できる
+             */
+            public boolean isHighScore() {
+                return score > 80;
+            }
+            
+            public boolean isAdult() {
+                return age >= 18;
+            }
+            
+            public String getDisplayName() {
+                return isActive ? name + " (Active)" : name + " (Inactive)";
+            }
         }
         
         public String formatUserProfile(UserProfile profile) {
             StringBuilder result = new StringBuilder();
             
-            appendFormattedName(result, profile.getName());
-            appendFormattedEmail(result, profile.getEmail());
-            appendAgeIfValid(result, profile.getAge());
+            appendFormattedName(result, profile.name());
+            appendFormattedEmail(result, profile.email());
+            appendAgeIfValid(result, profile.age());
             appendActiveStatus(result, profile.isActive());
-            appendContactInfo(result, profile.getAddress(), profile.getPhoneNumber());
-            appendHighScoreIndicator(result, profile.getScore());
+            appendContactInfo(result, profile.address(), profile.phoneNumber());
+            appendHighScoreIndicator(result, profile.score());
             
             return result.toString();
         }
