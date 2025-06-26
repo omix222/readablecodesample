@@ -69,14 +69,20 @@ readable-code-examples/
 │   │   │   └── FunctionDesignExamples.java
 │   │   ├── comments/            # 第5-6章：コメント
 │   │   │   └── CommentExamples.java
-│   │   └── structure/           # 第7-8章：コード構造
-│   │       └── CodeStructureExamples.java
+│   │   ├── structure/           # 第7-8章：コード構造
+│   │   │   └── CodeStructureExamples.java
+│   │   ├── constants/           # マジックナンバー対策
+│   │   │   └── MagicNumberExamples.java
+│   │   └── modern/              # Modern Java機能
+│   │       └── VarExamples.java
 │   └── test/java/              # JUnit 5テストコード
 │       └── com/example/readablecode/
 │           ├── naming/NamingExamplesTest.java
 │           ├── functions/FunctionDesignExamplesTest.java
 │           ├── comments/CommentExamplesTest.java
-│           └── structure/CodeStructureExamplesTest.java
+│           ├── structure/CodeStructureExamplesTest.java
+│           ├── constants/MagicNumberExamplesTest.java
+│           └── modern/VarExamplesTest.java
 ```
 
 ## 📖 学習内容とページ対応
@@ -162,6 +168,51 @@ Order order = new OrderBuilder()
     .build();
 ```
 
+### 🔢 5. マジックナンバー対策 (`constants/MagicNumberExamples.java`)
+**第2章「名前に情報を込める」(p.19-22) - 定数の適切な使用**
+
+- ✅ マジックナンバーを避けて名前付き定数を使用 (p.19-20)
+- ✅ 定数に意味のある名前を付ける (p.21-22)
+- ✅ 関連する定数をグループ化する (p.44-46)
+- ✅ HTTPステータスコードなどの業界標準定数
+
+**実装例:**
+```java
+// 悪い例：意味不明な数値
+if (age < 18) return false;
+if (score > 100) return false;
+
+// 良い例：名前付き定数で意図を明確化
+private static final int MINIMUM_AGE = 18;
+private static final double MAX_SCORE = 100.0;
+if (age < MINIMUM_AGE) return false;
+if (score > MAX_SCORE) return false;
+```
+
+### 🚀 6. Modern Java機能 (`modern/VarExamples.java`)
+**Java 10+ のvar（ローカル変数型推論）活用法**
+
+- ✅ 型が明確な場合のvar使用で可読性向上
+- ✅ 複雑なジェネリクス型宣言の簡素化
+- ✅ リファクタリング耐性の向上
+- ✅ record、stream、text blocksとの組み合わせ
+- ✅ 適切でない使用例の回避
+
+**実装例:**
+```java
+// 従来の冗長な書き方
+Map<String, List<String>> traditionalMap = new HashMap<String, List<String>>();
+
+// varを使った簡潔な書き方
+var modernMap = new HashMap<String, List<String>>();
+
+// recordとvarの組み合わせ
+var user = new UserProfile("john@example.com", "John", true);
+var activeUsers = users.stream()
+    .filter(UserProfile::isActive)
+    .toList();
+```
+
 ## 🧪 テスト
 
 各サンプルコードには包括的なJUnit 5テストが含まれています。
@@ -172,15 +223,17 @@ mvn test
 
 # 特定のテストクラスのみ実行
 mvn test -Dtest=NamingExamplesTest
+mvn test -Dtest=VarExamplesTest
 
 # テストレポートの確認
 open target/surefire-reports/index.html
 ```
 
 **テスト統計:**
-- 総テスト数: 59個
+- 総テスト数: 89個
 - 成功率: 100%
 - カバレッジ: 主要機能をカバー
+- Modern Java機能: var、record、streamの組み合わせテスト含む
 
 ## 📚 学習の進め方
 
@@ -229,7 +282,7 @@ open target/site/apidocs/index.html
 
 ## 🏷️ タグ
 
-`Java` `リーダブルコード` `クリーンコード` `設計` `命名規則` `関数設計` `コメント` `JUnit5` `Maven` `教育`
+`Java` `リーダブルコード` `クリーンコード` `設計` `命名規則` `関数設計` `コメント` `JUnit5` `Maven` `Java17` `record` `var` `教育`
 
 ---
 
