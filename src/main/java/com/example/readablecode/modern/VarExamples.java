@@ -24,7 +24,6 @@ import java.nio.file.Paths;
  * - JEP 286: Local-Variable Type Inference
  * - Effective Java 3rd Edition Item 57
  * 
- * @author Readable Code Examples
  * @version 1.0
  */
 public class VarExamples {
